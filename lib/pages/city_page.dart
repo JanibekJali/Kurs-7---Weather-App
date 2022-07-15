@@ -61,6 +61,7 @@ class CityPage extends StatelessWidget {
                         EdgeInsets.symmetric(horizontal: 50, vertical: 10)),
                 onPressed: () {
                   FocusScope.of(context).unfocus();
+                  Navigator.pop(context, textEditingController.text);
                   log('textEditingController ==> ${textEditingController.text}');
                   print(
                       'textEditingController ==> ${textEditingController.text}');
