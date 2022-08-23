@@ -3,12 +3,19 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:weather_app/constants/api.dart';
-import 'package:weather_app/utils/weather_util.dart';
 
-import 'pages/city_page.dart';
 import 'package:http/http.dart' as http;
+import 'package:weather_app/app/data/model/weather_model.dart';
+import 'package:weather_app/app/data/repositories/geo_repo.dart';
+import 'package:weather_app/app/data/repositories/weather_model_repo.dart';
+import 'package:weather_app/app/data/services/geo_locator_service.dart';
+import 'package:weather_app/app/data/services/weather_service.dart';
 
+import '../../utils/constants/api.dart';
+import '../../data/local_data/weather_util.dart';
+import 'city_page.dart';
+
+// refactoring, clean code
 class WeatherPage extends StatefulWidget {
   const WeatherPage({
     Key key,
@@ -24,6 +31,7 @@ class _WeatherPageState extends State<WeatherPage> {
   String _description = '';
   String _icon = '';
   bool _isLoading = false;
+  WeatherModel weatherModel;
   @override
   void initState() {
     showWeatherLocation();
@@ -42,85 +50,16 @@ class _WeatherPageState extends State<WeatherPage> {
     });
   }
 
-  Future<Position> getLocation() async {
-    bool serviceEnabled;
-    LocationPermission permission;
-
-    serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      return Future.error('Location services are disabled.');
-    }
-
-    permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
-        return Future.error('Location permissions are denied');
-      }
-    }
-
-    if (permission == LocationPermission.deniedForever) {
-      return Future.error(
-          'Location permissions are permanently denied, we cannot request permissions.');
-    }
-
-    return await Geolocator.getCurrentPosition();
+  getLocation() {
+    geoLocatorService.getLocation();
   }
 
-  Future<void> getCurrentWeather(Position currentPosition) async {
-    final client = http.Client();
-    try {
-      Uri uri = Uri.parse(
-          'https://api.openweathermap.org/data/2.5/weather?lat=${currentPosition.latitude}35&lon=${currentPosition.longitude}139&appid=$api');
-      // response jon gana joop
-      final response = await client.get(uri);
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        final body = response.body;
-
-        final _data = jsonDecode(body) as Map<String, dynamic>;
-
-        _cityName = _data['name'];
-        final kelvin = _data['main']['temp'] as num;
-
-        _celcius = WeatherUtil.calculateWeather(kelvin);
-        _description = WeatherUtil.getDescription(int.parse(_celcius));
-        _icon = WeatherUtil.getWeatherIcon(kelvin);
-
-        setState(() {});
-      }
-    } catch (e) {
-      throw Exception(e);
-    }
+  Future<void> getCurrentWeather(position) async {
+    await weatherService1.getCurrentWeatherModel(position);
   }
 
-  Future<void> getCityWeather(String cityName) async {
-    setState(() {
-      _isLoading = true;
-    });
-    final client = http.Client();
-    try {
-      Uri uri = Uri.parse(
-          'https://api.openweathermap.org/data/2.5/weather?q=$cityName&appid=$api');
-      final joop = await client.get(uri);
-      if (joop.statusCode == 200 || joop.statusCode == 201) {
-        final _data = jsonDecode(joop.body) as Map<String, dynamic>;
-        _cityName = _data['name'];
-        final kelvin = _data['main']['temp'] as num;
-
-        _celcius = WeatherUtil.calculateWeather(kelvin);
-        _description = WeatherUtil.getDescription(int.parse(_celcius));
-        _icon = WeatherUtil.getWeatherIcon(kelvin);
-      }
-      setState(() {
-        _isLoading = false;
-      });
-    } catch (katany) {
-      setState(() {
-        _isLoading = false;
-      });
-
-      throw Exception(katany);
-    }
+  void getCityWeather(cityName) {
+    weatherModelRepo.getCityNameWeatherModel(cityName);
   }
 
   @override
@@ -222,6 +161,8 @@ class _WeatherPageState extends State<WeatherPage> {
     );
   }
 }
+
+
 // CRUD
 // Create - post
 // Read - get

@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:weather_app/pages/city_page.dart';
-
-import 'weather_page.dart';
+import 'app/presentation/pages/weather_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -19,7 +17,6 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       home: const WeatherPage(),
-      // home: const MisalPage(),
     );
   }
 }
