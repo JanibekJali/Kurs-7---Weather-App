@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:weather_app/app/utils/constants/di/get_it.dart';
 import 'app/presentation/pages/weather_page.dart';
 
-void main() {
+main() {
+  setup();
   runApp(const MyApp());
 }
 

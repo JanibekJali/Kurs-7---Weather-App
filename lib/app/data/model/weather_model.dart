@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:weather_app/app/data/local_data/weather_util.dart';
 
 class WeatherModel {
@@ -14,6 +16,7 @@ class WeatherModel {
 
   factory WeatherModel.fromJson(Map<String, dynamic> json) {
     final kelvin = json['main']['temp'] as num;
+    log('kelvin == $kelvin');
 
     return WeatherModel(
       celcius: WeatherUtil.calculateWeather(kelvin),

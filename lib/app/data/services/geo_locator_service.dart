@@ -26,5 +26,3 @@ class GeoLocatorService {
     return await Geolocator.getCurrentPosition();
   }
 }
-
-final GeoLocatorService geoLocatorService = GeoLocatorService();
