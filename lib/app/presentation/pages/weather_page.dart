@@ -45,6 +45,7 @@ class _WeatherPageState extends State<WeatherPage> {
           child: GestureDetector(
             onTap: () async {
               await showWeatherLocation();
+              setState(() {});
               log('showWeatherLocation ==> ${showWeatherLocation()}');
             },
             child: const Icon(
